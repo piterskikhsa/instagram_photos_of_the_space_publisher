@@ -1,0 +1,8 @@
+/images/
+
+.env
+*.pyc
+.idea/
+*.txt
+*.checkpoint
+*.log
