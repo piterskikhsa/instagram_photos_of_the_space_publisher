@@ -46,6 +46,11 @@ def del_converted_image(dir_path):
 
 
 def main():
+    # TODO должен быть алгоритм без лишних подробностей
+    # Создать дир
+    # Скачать картинки
+    # Выложить изображения в Инст
+
     posted_pic_file = 'posted_pics.txt'
     image_dir_path = './images'
     timeout = 10

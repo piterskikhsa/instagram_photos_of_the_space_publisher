@@ -1,4 +1,3 @@
-import json
 import requests
 
 from helpers import download_image
@@ -7,7 +6,8 @@ from helpers import download_image
 def fetch_spacex_last_launch():
     last_launch_url = 'https://api.spacexdata.com/v3/launches/latest'
     response = requests.get(last_launch_url)
-    launch_json = json.loads(response.content)
+    # TODO errors 404 or 403 response.ok
+    launch_json = response.json()
     return launch_json['links']['flickr_images']
 
 
