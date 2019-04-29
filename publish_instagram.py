@@ -36,9 +36,9 @@ def get_sorted_pictures(folder_path, exts=('jpg', 'tif')):
     return sorted(pics)
 
 
-def write_posted_pic_in_file(posted_pic, file_name):
-    with open(file_name, 'a') as file_out:
-        file_out.write('{}\n'.format(posted_pic))
+def write_posted_pic_in_file(posted_pics, file_name):
+    with open(file_name, 'w') as file_out:
+        file_out.write('\n'.join(posted_pics))
 
 
 def clear_converted_image(dir_path):
@@ -58,7 +58,6 @@ def upload_images(inst_bot, pictures, posted_pictures):
             os.remove(pic)
         if pic not in posted_pictures:
             posted_pictures.append(pic)
-            write_posted_pic_in_file(pic, posted_pictures)
 
 
 def main():
@@ -72,6 +71,7 @@ def main():
     bot = create_bot(os.getenv('LOGIN_INST'), os.getenv('PASSWORD_INST'), os.getenv('PROXY_INST'))
     pictures = get_sorted_pictures(image_dir_path)
     upload_images(bot, pictures, posted_pic_list)
+    write_posted_pic_in_file(posted_pic_list, posted_pic_file)
 
     clear_converted_image(image_dir_path)
 
