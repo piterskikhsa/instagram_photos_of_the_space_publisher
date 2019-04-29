@@ -1,6 +1,6 @@
 import requests
 
-from helpers import download_image
+from helpers import download_image, get_output_folder
 
 
 def get_image_ids_from_collection(collection_name: str, url: str):
@@ -14,7 +14,7 @@ def get_image_ids_from_collection(collection_name: str, url: str):
         response.raise_for_status()
 
 
-def fetch_hubble_images(image_id: int, url: str):
+def get_image_url(image_id: int, url: str):
     url = f'{url}/{image_id}'
     response = requests.get(url)
     if response.ok:
@@ -24,20 +24,20 @@ def fetch_hubble_images(image_id: int, url: str):
         response.raise_for_status()
 
 
-def download_images_from_hubble_collection(collection: str, output_folder: str):
+def fetch_hubble_images(collection: str, output_folder: str):
     url = 'http://hubblesite.org/api/v3/image'
     image_ids = get_image_ids_from_collection(collection, url)
     if not image_ids:
         return None
     for image_id in image_ids:
-        image = fetch_hubble_images(image_id, url)
+        image = get_image_url(image_id, url)
         download_image(image, f'{output_folder}/{image_id}')
 
 
 def main():
     collection = 'spacecraft'
-    output_folder = 'images'
-    download_images_from_hubble_collection(collection, output_folder)
+    output_folder = get_output_folder('images')
+    fetch_hubble_images(collection, output_folder)
 
 
 if __name__ == '__main__':

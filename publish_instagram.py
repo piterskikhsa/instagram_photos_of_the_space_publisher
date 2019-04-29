@@ -2,9 +2,13 @@ import glob
 import os
 import time
 from io import open
-
 from instabot import Bot
 from dotenv import load_dotenv
+
+from fetch_hubble import fetch_hubble_images
+from fetch_spacex import fetch_spacex_last_launch
+from helpers import get_output_folder
+
 
 load_dotenv()
 
@@ -26,7 +30,7 @@ def get_posted_pic(file_name):
 
 def get_sorted_pictures(folder_path, exts=('jpg', 'tif')):
     pics = []
-    folder_path = folder_path[:-1] if folder_path[-1] == '/' else folder_path
+    folder_path = folder_path.strip('/')
     for ext in exts:
         pics.extend(glob.glob('{}/*.{}'.format(folder_path, ext)))
     return sorted(pics)
@@ -45,35 +49,30 @@ def del_converted_image(dir_path):
             os.remove(file)
 
 
+def upload_images(inst_bot, pictures, posted_pictures):
+    for pic in pictures:
+        if pic in posted_pictures:
+            continue
+        inst_bot.upload_photo(pic, caption='Космос: {}'.format(pic.split('.')[0]))
+        if inst_bot.api.last_response.status_code != 200:
+            pass
+        if pic not in posted_pictures:
+            posted_pictures.append(pic)
+            write_posted_pic_in_file(pic, posted_pictures)
+
+
 def main():
-    # TODO должен быть алгоритм без лишних подробностей
-    # Создать дир
-    # Скачать картинки
-    # Выложить изображения в Инст
-
     posted_pic_file = 'posted_pics.txt'
-    image_dir_path = './images'
-    timeout = 10
+    image_dir_path = get_output_folder('images')
 
-    if not os.path.exists(image_dir_path):
-        os.makedirs(image_dir_path)
+    fetch_spacex_last_launch(image_dir_path)
+    fetch_hubble_images('news', image_dir_path)
 
     posted_pic_list = get_posted_pic(posted_pic_file)
     bot = create_bot(os.getenv('LOGIN_INST'), os.getenv('PASSWORD_INST'), os.getenv('PROXY_INST'))
     pictures = get_sorted_pictures(image_dir_path)
 
-    for pic in pictures:
-        if pic in posted_pic_list:
-            continue
-        print('upload: ', pic)
-        bot.upload_photo(pic, caption='Космос: {}'.format(pic.split('.')[0]))
-        if bot.api.last_response.status_code != 200:
-            print(bot.api.last_response)
-        if pic not in posted_pic_list:
-            posted_pic_list.append(pic)
-            write_posted_pic_in_file(pic, posted_pic_file)
-
-        time.sleep(timeout)
+    upload_images(bot, pictures, posted_pic_list)
 
     del_converted_image(image_dir_path)
 
