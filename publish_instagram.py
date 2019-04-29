@@ -41,7 +41,7 @@ def write_posted_pic_in_file(posted_pic, file_name):
         file_out.write('{}\n'.format(posted_pic))
 
 
-def del_converted_image(dir_path):
+def clear_converted_image(dir_path):
     files = glob.glob('{}/*'.format(dir_path))
     for file in files:
         file_status = file.split('.')
@@ -55,7 +55,7 @@ def upload_images(inst_bot, pictures, posted_pictures):
             continue
         inst_bot.upload_photo(pic, caption='Космос: {}'.format(pic.split('.')[0]))
         if inst_bot.api.last_response.status_code != 200:
-            pass
+            os.remove(pic)
         if pic not in posted_pictures:
             posted_pictures.append(pic)
             write_posted_pic_in_file(pic, posted_pictures)
@@ -71,10 +71,9 @@ def main():
     posted_pic_list = get_posted_pic(posted_pic_file)
     bot = create_bot(os.getenv('LOGIN_INST'), os.getenv('PASSWORD_INST'), os.getenv('PROXY_INST'))
     pictures = get_sorted_pictures(image_dir_path)
-
     upload_images(bot, pictures, posted_pic_list)
 
-    del_converted_image(image_dir_path)
+    clear_converted_image(image_dir_path)
 
 
 if __name__ == '__main__':
