@@ -3,27 +3,23 @@ import requests
 from helpers import download_image, get_output_folder
 
 
-def get_image_ids_from_collection(url: str):
+def get_image_ids_from_collection(url):
     response = requests.get(url)
-    if response.ok:
-        images_data = response.json()
-        image_ids = (image.get('id') for image in images_data)
-        return image_ids
-    else:
-        response.raise_for_status()
+    response.raise_for_status()
+    images_data = response.json()
+    image_ids = (image.get('id') for image in images_data)
+    return image_ids
 
 
-def get_image_url(image_id: int, url: str):
+def get_image_url(image_id, url):
     url = f'{url}/{image_id}'
     response = requests.get(url)
-    if response.ok:
-        launch = response.json()
-        return launch['image_files'][-1]['file_url']
-    else:
-        response.raise_for_status()
+    response.raise_for_status()
+    launch = response.json()
+    return launch['image_files'][-1]['file_url']
 
 
-def fetch_hubble_images(collection: str, output_folder: str):
+def fetch_hubble_images(collection, output_folder):
     url = 'http://hubblesite.org/api/v3/images/{}'.format(collection)
     image_url = 'http://hubblesite.org/api/v3/image'
     image_ids = get_image_ids_from_collection(url)

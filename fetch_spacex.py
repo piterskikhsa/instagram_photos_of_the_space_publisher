@@ -3,16 +3,14 @@ import requests
 from helpers import download_image, get_output_folder
 
 
-def get_last_launch_images(url: str):
+def get_last_launch_images(url):
     response = requests.get(url)
-    if response.ok:
-        launch_json = response.json()
-        return launch_json['links']['flickr_images']
-    else:
-        response.raise_for_status()
+    response.raise_for_status()
+    launch_json = response.json()
+    return launch_json['links']['flickr_images']
 
 
-def fetch_spacex_last_launch(output_folder: str):
+def fetch_spacex_last_launch(output_folder):
     last_launch_url = 'https://api.spacexdata.com/v3/launches/latest'
     last_images = get_last_launch_images(last_launch_url)
     for image_number, image_url in enumerate(last_images, 1):

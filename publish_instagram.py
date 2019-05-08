@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from fetch_hubble import fetch_hubble_images
 from fetch_spacex import fetch_spacex_last_launch
-from helpers import get_output_folder
+from helpers import get_output_folder, get_sorted_pictures
 
 
 load_dotenv()
@@ -23,17 +23,9 @@ def get_posted_pic(file_name):
     try:
         with open(file_name, 'r', encoding='utf-8') as file_output:
             posted_pic = file_output.read().splitlines()
-    except Exception:
+    except FileNotFoundError:
         posted_pic = []
     return posted_pic
-
-
-def get_sorted_pictures(folder_path, exts=('jpg', 'tif')):
-    pics = []
-    folder_path = folder_path.strip('/')
-    for ext in exts:
-        pics.extend(glob.glob('{}/*.{}'.format(folder_path, ext)))
-    return sorted(pics)
 
 
 def write_posted_pic_in_file(posted_pics, file_name):
@@ -78,4 +70,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
