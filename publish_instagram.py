@@ -1,13 +1,12 @@
-import glob
 import os
-import time
 from io import open
+
 from instabot import Bot
 from dotenv import load_dotenv
 
 from fetch_hubble import fetch_hubble_images
 from fetch_spacex import fetch_spacex_last_launch
-from helpers import get_output_folder, get_sorted_pictures
+from helpers import get_output_folder, get_sorted_pictures, clear_converted_image
 
 
 load_dotenv()
@@ -33,19 +32,11 @@ def write_posted_pic_in_file(posted_pics, file_name):
         file_out.write('\n'.join(posted_pics))
 
 
-def clear_converted_image(dir_path):
-    files = glob.glob('{}/*'.format(dir_path))
-    for file in files:
-        file_status = file.split('.')
-        if file_status[-1] == 'REMOVE_ME' or file_status[-2] == 'CONVERTED':
-            os.remove(file)
-
-
 def upload_images(inst_bot, pictures, posted_pictures):
     for pic in pictures:
         if pic in posted_pictures:
             continue
-        inst_bot.upload_photo(pic, caption='Космос: {}'.format(pic.split('.')[0]))
+        inst_bot.upload_photo(pic)
         if inst_bot.api.last_response.status_code != 200:
             os.remove(pic)
         if pic not in posted_pictures:

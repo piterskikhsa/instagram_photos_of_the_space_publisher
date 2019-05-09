@@ -1,12 +1,8 @@
-import requests
-
-from helpers import download_image, get_output_folder
+from helpers import download_image, get_output_folder, get_json_from_url
 
 
 def get_last_launch_images(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    launch_json = response.json()
+    launch_json = get_json_from_url(url)
     return launch_json['links']['flickr_images']
 
 
